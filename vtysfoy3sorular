@@ -1,0 +1,58 @@
+SELECT c.ad, c.soyad, c.maas
+FROM calisanlar c
+JOIN birimler b ON c.calisan_birim_id = b.birim_id
+WHERE b.birim_ad = 'Yazılım' OR b.birim_ad = 'Donanım';
+
+SELECT TOP 1 ad, soyad, maas
+FROM calisanlar
+ORDER BY maas DESC;
+
+SELECT ad, soyad, maas
+FROM calisanlar
+WHERE maas = (SELECT MAX(maas) FROM calisanlar);
+
+SELECT b.birim_ad, COUNT(c.calisan_id) AS calisan_sayisi
+FROM birimler b
+LEFT JOIN calisanlar c ON b.birim_id = c.calisan_birim_id
+GROUP BY b.birim_ad;
+
+SELECT u.unvan_calisan, COUNT(c.calisan_id) AS calisan_sayisi
+FROM unvan u
+JOIN calisanlar c ON u.unvan_calisan_id = c.calisan_id
+GROUP BY u.unvan_calisan;
+
+SELECT ad, soyad, maas
+FROM calisanlar
+WHERE maas BETWEEN 50000 AND 100000;
+
+SELECT c.ad, c.soyad, b.birim_ad, u.unvan_calisan, i.ikramiye_calisan
+FROM calisanlar c
+JOIN birimler b ON c.calisan_birim_id = b.birim_id
+JOIN unvan u ON c.calisan_id = u.unvan_calisan_id
+JOIN ikramiye i ON c.calisan_id = i.ikramiye_calisan_id;
+
+SELECT c.ad, c.soyad, u.unvan_calisan
+FROM calisanlar c
+JOIN unvan u ON c.calisan_id = u.unvan_calisan_id
+WHERE u.unvan_calisan IN ('Yönetici', 'Müdür');
+
+WITH BirimMaxMaas AS (
+    SELECT calisan_id, ad, soyad, maas,
+           ROW_NUMBER() OVER (PARTITION BY calisan_birim_id ORDER BY maas DESC) AS rn
+    FROM calisanlar
+)
+SELECT ad, soyad, maas
+FROM BirimMaxMaas
+WHERE rn = 1;
+
+WITH BirimMaxMaas AS (
+    SELECT c.ad, c.soyad, c.maas, b.birim_ad,
+           ROW_NUMBER() OVER (PARTITION BY c.calisan_birim_id ORDER BY c.maas DESC) AS rn
+    FROM calisanlar c
+    JOIN birimler b ON c.calisan_birim_id = b.birim_id
+)
+SELECT ad, soyad, maas, birim_ad
+FROM BirimMaxMaas
+WHERE rn = 1;
+
+

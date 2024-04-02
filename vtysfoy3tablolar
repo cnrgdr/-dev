@@ -1,0 +1,33 @@
+-- birimler tablosu
+CREATE TABLE birimler (
+    birim_id INT PRIMARY KEY,
+    birim_ad VARCHAR(255)
+);
+
+-- calisanlar tablosu
+CREATE TABLE calisanlar (
+    calisan_id INT PRIMARY KEY,
+    ad VARCHAR(50),
+    soyad VARCHAR(50),
+    maas DECIMAL(10, 2),
+    katilma_tarihi DATETIME,
+    calisan_birim_id INT,
+    FOREIGN KEY (calisan_birim_id) REFERENCES birimler(birim_id)
+);
+
+-- unvan tablosu
+CREATE TABLE unvan (
+    unvan_calisan_id INT PRIMARY KEY,
+    unvan_calisan VARCHAR(100),
+    unvan_tarih DATETIME,
+    FOREIGN KEY (unvan_calisan_id) REFERENCES calisanlar(calisan_id)
+);
+
+-- ikramiye tablosu
+CREATE TABLE ikramiye (
+    ikramiye_calisan_id INT,
+    ikramiye_calisan VARCHAR(100),
+    ikramiye_tarih DATETIME,
+    FOREIGN KEY (ikramiye_calisan_id) REFERENCES calisanlar(calisan_id)
+);
+
